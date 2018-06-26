@@ -1,0 +1,2 @@
+# CryptoSearcher
+Lists cryptos
