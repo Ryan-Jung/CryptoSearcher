@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+</head>
+<body>
+	<div id = "crypto-list">
+        <div id = "search">
+        	<input v-model="search" id = "searchbar" placeholder = "Search"></input>
+			<div id = "display">
+				<li v-for="coin in filteredList">{{coin.CoinName}}</li>
+				</div>
+      		 </div>
+		</div>
+</body>
+
+<script>
+	const search = new Vue({
+				     	el: "#crypto-list",
+				      	data: {
+							search: "",
+				        	cryptolist:""
+						},
+						watch: {
+							search: function(oldSearch, newSearch){
+								this.debouncedSearchCryptos();
+							}
+						},
+						methods:{
+							getCryptos: function(){
+								const vm = this;
+								axios.get("https://min-api.cryptocompare.com/data/all/coinlist")
+								.then( function (response){
+									_.forOwn(response.data["Data"], function(coin,key){									
+                                  		cryptos.push(coin);
+									});
+									vm.cryptolist = cryptos;
+								})
+								.catch( function(error){
+									console.log(error);
+								})
+							},			
+						},
+						computed: {
+							filteredList: function(){
+								let searchTerm  = this.$data.search;
+								return cryptolist.filter(function(str){return str.indexOf(searchTerm) === -1});
+							}
+						},
+						created: function(){
+							this.getCryptos();
+							this.debouncedSearchCryptos = _.debounce(this.getCryptos,10000);
+						},	
+				   });
+
+	
+
+		
+</script>	
+
+supervisor
