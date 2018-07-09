@@ -21,7 +21,8 @@
 				     	el: "#crypto-list",
 				      	data: {
 							search: "",
-				        	cryptolist:""
+				        	cryptolist:[],
+							filteredList:[]
 						},
 						watch: {
 							search: function(oldSearch, newSearch){
@@ -33,25 +34,27 @@
 								const vm = this;
 								axios.get("https://min-api.cryptocompare.com/data/all/coinlist")
 								.then( function (response){
+									let cryptos = [];
 									_.forOwn(response.data["Data"], function(coin,key){									
                                   		cryptos.push(coin);
 									});
 									vm.cryptolist = cryptos;
+									vm.filteredList = cryptos;
 								})
 								.catch( function(error){
 									console.log(error);
 								})
-							},			
+							},
+							filterCryptos: function(){
+								console.log("called");
+								const searchTerm = new RegExp(this.$data.search,'i');
+								this.filteredList =  this.cryptolist.filter(function(coin){ return searchTerm.test(coin.CoinName)});
+							}			
 						},
-						computed: {
-							filteredList: function(){
-								let searchTerm  = this.$data.search;
-								return cryptolist.filter(function(str){return str.indexOf(searchTerm) === -1});
-							}
-						},
+						
 						created: function(){
 							this.getCryptos();
-							this.debouncedSearchCryptos = _.debounce(this.getCryptos,10000);
+							this.debouncedSearchCryptos = _.debounce(this.filterCryptos,500);
 						},	
 				   });
 
@@ -60,4 +63,3 @@
 		
 </script>	
 
-supervisor
